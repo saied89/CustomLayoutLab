@@ -78,17 +78,17 @@ class BottomSheetState(
     animationSpec = animationSpec,
     confirmStateChange = confirmStateChange
 ) {
-    /**
-     * Whether the bottom sheet is expanded.
-     */
-    val isExpanded: Boolean
-        get() = currentValue == BottomSheetValue.Expanded
-
-    /**
-     * Whether the bottom sheet is collapsed.
-     */
-    val isCollapsed: Boolean
-        get() = currentValue == BottomSheetValue.Collapsed
+//    /**
+//     * Whether the bottom sheet is expanded.
+//     */
+//    val isExpanded: Boolean
+//        get() = currentValue == BottomSheetValue.Expanded
+//
+//    /**
+//     * Whether the bottom sheet is collapsed.
+//     */
+//    val isCollapsed: Boolean
+//        get() = currentValue == BottomSheetValue.Collapsed
 
     /**
      * Expand the bottom sheet with animation and suspend until it if fully expanded or animation
@@ -107,6 +107,8 @@ class BottomSheetState(
      * @return the reason the collapse animation ended
      */
     suspend fun collapse() = animateTo(BottomSheetValue.Collapsed)
+
+    suspend fun fullscreen() = animateTo(BottomSheetValue.FullScreen)
 
     companion object {
         /**
@@ -260,6 +262,7 @@ fun CustomBottomsheetScaffold(
     sheetBackgroundColor: Color = MaterialTheme.colors.surface,
     sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
     sheetPeekHeight: Dp = BottomSheetScaffoldDefaults.SheetPeekHeight,
+    sheetExpandHeight: Dp = BottomSheetScaffoldDefaults.SheetPeekHeight,
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     drawerGesturesEnabled: Boolean = true,
     drawerShape: Shape = MaterialTheme.shapes.large,
@@ -275,6 +278,7 @@ fun CustomBottomsheetScaffold(
     BoxWithConstraints(modifier) {
         val fullHeight = constraints.maxHeight.toFloat()
         val peekHeightPx = with(LocalDensity.current) { sheetPeekHeight.toPx() }
+        val peekExpandPx = with(LocalDensity.current) { sheetExpandHeight.toPx() }
         var bottomSheetHeight by remember { mutableStateOf(fullHeight) }
 
         val swipeable = Modifier
@@ -283,27 +287,29 @@ fun CustomBottomsheetScaffold(
                 state = scaffoldState.bottomSheetState,
                 anchors = mapOf(
                     fullHeight - peekHeightPx to BottomSheetValue.Collapsed,
-                    fullHeight - bottomSheetHeight to BottomSheetValue.Expanded,
+                    fullHeight - peekExpandPx to BottomSheetValue.Expanded,
+                    0f to BottomSheetValue.FullScreen
+//                    fullHeight - bottomSheetHeight to BottomSheetValue.Expanded,
                 ),
                 orientation = Orientation.Vertical,
                 enabled = sheetGesturesEnabled,
                 resistance = null
             )
-            .semantics {
-                if (peekHeightPx != bottomSheetHeight) {
-                    if (scaffoldState.bottomSheetState.isCollapsed) {
-                        expand {
-                            scope.launch { scaffoldState.bottomSheetState.expand() }
-                            true
-                        }
-                    } else {
-                        collapse {
-                            scope.launch { scaffoldState.bottomSheetState.collapse() }
-                            true
-                        }
-                    }
-                }
-            }
+//            .semantics {
+//                if (peekHeightPx != bottomSheetHeight) {
+//                    if (scaffoldState.bottomSheetState.isCollapsed) {
+//                        expand {
+//                            scope.launch { scaffoldState.bottomSheetState.expand() }
+//                            true
+//                        }
+//                    } else {
+//                        collapse {
+//                            scope.launch { scaffoldState.bottomSheetState.collapse() }
+//                            true
+//                        }
+//                    }
+//                }
+//            }
 
         val child = @Composable {
             BottomSheetScaffoldStack(

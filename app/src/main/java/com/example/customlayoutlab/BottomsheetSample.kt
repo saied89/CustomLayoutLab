@@ -1,12 +1,7 @@
 package com.example.customlayoutlab
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.Button
@@ -47,11 +42,12 @@ fun BottomSheetScaffoldSample() {
     val scaffoldState = rememberBottomSheetScaffoldState()
     CustomBottomsheetScaffold(
         sheetContent = {
-            Box(
-                Modifier.fillMaxWidth().height(128.dp),
-                contentAlignment = Alignment.Center
+            Column(
+                Modifier.fillMaxSize(),
             ) {
-                Text("Swipe up to expand sheet")
+                Text("${scaffoldState.bottomSheetState.progress.fraction}")
+                Text("${scaffoldState.bottomSheetState.targetValue}")
+                Text("${scaffoldState.bottomSheetState.currentValue}")
             }
             Column(
                 Modifier.fillMaxWidth().padding(64.dp),
@@ -61,7 +57,7 @@ fun BottomSheetScaffoldSample() {
                 Spacer(Modifier.height(20.dp))
                 Button(
                     onClick = {
-                        scope.launch { scaffoldState.bottomSheetState.collapse() }
+                        scope.launch { scaffoldState.bottomSheetState.fullscreen() }
                     }
                 ) {
                     Text("Click to collapse sheet")
@@ -94,6 +90,7 @@ fun BottomSheetScaffoldSample() {
         },
         floatingActionButtonPosition = FabPosition.End,
         sheetPeekHeight = 128.dp,
+        sheetExpandHeight = 384.dp,
         drawerContent = {
             Column(
                 Modifier.fillMaxWidth().padding(16.dp),
